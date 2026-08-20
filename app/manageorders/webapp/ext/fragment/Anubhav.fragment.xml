@@ -1,0 +1,39 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:macros="sap.fe.macros"
+    xmlns:micro="sap.suite.ui.microchart"
+    xmlns:vbm="sap.ui.vbm">
+    <VBox id="VBox" core:require="{ handler: 'anubhav/ui/manageorders/ext/fragment/Anubhav'}">
+        <Button id="Button" text="Anubhav" press="handler.onPress" />
+
+        <!-- 1) Microchart with hardcoded data -->
+        <micro:ColumnMicroChart id="microChart" size="M" width="18rem" height="9rem" allowColumnLabels="true">
+            <micro:columns>
+                <micro:ColumnMicroChartData label="Q1" value="240" color="Good"     displayValue="240" />
+                <micro:ColumnMicroChartData label="Q2" value="180" color="Critical" displayValue="180" />
+                <micro:ColumnMicroChartData label="Q3" value="310" color="Good"     displayValue="310" />
+                <micro:ColumnMicroChartData label="Q4" value="90"  color="Error"    displayValue="90" />
+            </micro:columns>
+        </micro:ColumnMicroChart>
+
+        <!-- 2) Flight route Phuket -> Delhi -->
+        <vbm:GeoMap id="geoMap"
+            width="100%"
+            height="22rem"
+            initialPosition="87.7;18.3;0"
+            initialZoom="4"
+            refMapLayerStack="Default"
+            mapConfiguration="{ path: 'i18n>appTitle', formatter: 'handler.getMapConfiguration' }">
+            <vbm:vos>
+                <vbm:Spots>
+                    <vbm:Spot position="98.39;7.89;0" text="Phuket" tooltip="Phuket (HKT)" />
+                    <vbm:Spot position="77.10;28.70;0" text="Delhi"  tooltip="Delhi (DEL)" />
+                </vbm:Spots>
+                <vbm:Routes>
+                    <vbm:Route position="98.39;7.89;0;77.10;28.70;0" color="RGBA(0,112,242,1.0)" linewidth="3" />
+                </vbm:Routes>
+            </vbm:vos>
+        </vbm:GeoMap>
+    </VBox>
+</core:FragmentDefinition>

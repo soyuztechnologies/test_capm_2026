@@ -1,0 +1,19 @@
+{
+    "welcomeFile": "manageorders/webapp/index.html",
+    "authenticationMethod": "route",
+    "sessionTimeout": 15,
+    "routes":[
+                {
+                    "source": "^/manageorders/webapp/(.*)$",
+                    "localDir": "manageorders/webapp/",
+                    "target": "$1",
+                    "authenticationType": "xsuaa",
+                    "csrfProtection": true
+                },
+                {
+                    "source": "^/(.*)$",
+                    "authenticationType": "xsuaa",
+                    "destination": "srv-api"
+                }
+    ]
+}

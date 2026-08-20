@@ -1,0 +1,144 @@
+### For every new call ###
+### Get the service document
+http://localhost:4004/odata/v4/CatalogService
+Authorization: Basic varun:1234
+
+### Service metadata - descrive skeleton of the service
+http://localhost:4004/odata/v4/CatalogService/$metadata
+
+### GET All employee Records
+http://localhost:4004/odata/v4/CatalogService/EmployeeSet
+
+### Get ALL employees in V2
+http://localhost:4004/odata/v2/CatalogService/EmployeeSet
+Authorization: Basic varun:1234
+
+
+### Count of employee - $count
+http://localhost:4004/odata/v4/CatalogService/EmployeeSet/$count
+
+### GET Single Employee Data by KEY - 02BD2137-0890-1EEA-A6C2-BB55C197C7FB
+http://localhost:4004/odata/v4/CatalogService/EmployeeSet/02BD2137-0890-1EEA-A6C2-BB55C197C7FB
+
+### GET with pagination to load chunk by chunk - $top, $skip
+http://localhost:4004/odata/v4/CatalogService/EmployeeSet?$top=2&$skip=2
+
+### GET with filtering - $filter --> simple filter
+http://localhost:4004/odata/v4/CatalogService/EmployeeSet?$filter=bankName eq 'My Bank of San Francisco'
+
+### GET with filtering - $filter --> pattern match WHERE name LIKE 'Su*'
+http://localhost:4004/odata/v4/CatalogService/EmployeeSet?$filter=contains(nameFirst,'Su')
+
+### GET all the purchase orders
+http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet
+Authorization: Basic varun:1234
+
+### GET Single order
+http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet/02BD2137-0890-1EEA-A6C2-BB55C1979000
+
+### GET with association - purchase order with its items
+http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet/02BD2137-0890-1EEA-A6C2-BB55C1979000?$expand=Items
+
+### GET All the orders header with all their items
+http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet?$expand=Items
+
+### Lamdafunctions - all, any
+http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet?$expand=Items&$filter=Items/any(wa:wa/GROSS_AMOUNT gt 1200)
+
+###POST Employee data in database
+POST http://localhost:4004/odata/v4/CatalogService/EmployeeSet
+Content-Type: application/json
+Authorization: Basic yamini:4321
+
+{
+  "nameFirst": "Christiano",
+  "nameMiddle": "",
+  "nameLast": "Ronaldo",
+  "nameInitials": null,
+  "sex": "M",
+  "language": "E",
+  "phoneNumber": null,
+  "email": "chris@anubhavtrainings.com",
+  "loginName": "RONALDOCH",
+  "Currency_code": "EUR",
+  "salaryAmount": 1000000,
+  "accountNumber": "8877665544",
+  "bankId": "121000358",
+  "bankName": "RBS",
+  "country": null
+}
+
+###PATCH - update data in database
+PATCH http://localhost:4004/odata/v4/CatalogService/EmployeeSet/181204f1-9895-49aa-8cdd-6109e1756a9a
+Content-Type: application/json
+
+{
+    "salaryAmount": 1000000
+}
+
+###DELETE - remove database data
+DELETE http://localhost:4004/odata/v4/CatalogService/EmployeeSet/181204f1-9895-49aa-8cdd-6109e1756a9a
+
+###GET service document for cdsservice
+http://localhost:4004/odata/v4/CDSService
+
+###GET The product data
+http://localhost:4004/odata/v4/CDSService/ProductSet
+
+###GET single product data
+http://localhost:4004/odata/v4/CDSService/ProductSet/74867AD200E41EDBA5D8B06B26EB6052
+
+###GET Dependent data with lazy loading - on demand join
+http://localhost:4004/odata/v4/CDSService/ProductSet/74867AD200E41EDBA5D8B06B26EB6052?$expand=To_Items
+
+###DEEP insert 
+POST http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet
+Content-Type: application/json
+
+{
+  "GROSS_AMOUNT": 43534.96,
+  "NET_AMOUNT": 36584,
+  "TAX_AMOUNT": 6950.96,
+  "CURRENCY_code": "EUR",
+  "NODE_KEY": "02BD2137-0890-1EEA-A6C2-BB55C1980999",
+  "PO_ID": "300000001",
+  "PARTNER_GUID_NODE_KEY": "74867AD200E41EDBA5D8B06885AE0052",
+  "LIFECYCLE_STATUS": "N",
+  "OVERALL_STATUS": "P",
+  "NOTE": null,
+  "Items": [
+    {
+      "GROSS_AMOUNT": 1425.62,
+      "NET_AMOUNT": 1198,
+      "TAX_AMOUNT": 227.62,
+      "CURRENCY_code": "EUR",
+      "NODE_KEY": "02BD2137-0890-1EEA-A6C2-BB55C1975251",
+      "PO_ITEM_POS": 10,
+      "PRODUCT_GUID_NODE_KEY": "74867AD200E41EDBA5D8B06B26F96052"
+    },
+    {
+      "GROSS_AMOUNT": 1425.62,
+      "NET_AMOUNT": 1198,
+      "TAX_AMOUNT": 227.62,
+      "CURRENCY_code": "EUR",
+      "NODE_KEY": "02BD2137-0890-1EEA-A6C2-BB55C1975252",
+      "PO_ITEM_POS": 10,
+      "PRODUCT_GUID_NODE_KEY": "74867AD200E41EDBA5D8B06B26F96052"
+    }]
+}
+
+###
+GET http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet/02BD2137-0890-1EEA-A6C2-BB55C1980999?$expand=Items
+
+
+###GET Call to PO
+http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet/02BD2137-0890-1EEA-A6C2-BB55C1979000
+
+###Call the boost action
+POST http://localhost:4004/odata/v4/CatalogService/PurchaseOrderSet/02BD2137-0890-1EEA-A6C2-BB55C1979000/boost
+Content-Type: application/json
+
+{}
+
+###Call the function - to get most expensive orders top 3
+GET http://localhost:4004/odata/v4/CatalogService/getMostExpOrders(zkas=3)
