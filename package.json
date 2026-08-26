@@ -14,14 +14,16 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-manageorders": "cds watch --open anubhav.ui.manageorders/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-manageorders": "cds watch --open anubhav.ui.manageorders/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-poanalytics": "cds watch --open anubhav.ana.poanalytics/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "workspaces": [
     "app/*"
   ],
   "sapux": [
-    "app/manageorders"
+    "app/manageorders",
+    "app/poanalytics"
   ],
   "cds": {
     "requires": {
