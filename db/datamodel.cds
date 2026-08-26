@@ -1,6 +1,7 @@
 //type pools / include program in abap
 using { anubhav.common } from './common';
 using { cuid, Currency } from '@sap/cds/common';
+using { Attachments } from '@cap-js/attachments';
 
 //unique name for project
 namespace anubhav.db;
@@ -94,7 +95,8 @@ context transaction{
         OVERALL: Association to one master.StatusCode @title : '{i18n>STATUS}';
         NOTE: String(255) @title : '{i18n>NOTE}';
         Items: Composition of many poitems on
-                        Items.PARENT_KEY = $self @title : '{i18n>PO_ITEM_KEY}';        
+                        Items.PARENT_KEY = $self @title : '{i18n>PO_ITEM_KEY}';
+        attachments: Composition of many Attachments;        
     }
 
     entity poitems: common.Amount, cuid{
