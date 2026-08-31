@@ -57,3 +57,5 @@ service CatalogService @(path: 'CatalogService',
     function getMostExpOrders(zkas : Integer) returns many PurchaseOrderSet;
     
 }
+
+annotate CatalogService with @mcp @odata;
