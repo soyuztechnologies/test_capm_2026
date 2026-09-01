@@ -5,6 +5,7 @@
     "@cap-js-community/odata-v2-adapter": "^1.16.0",
     "@cap-js/hana": "^2",
     "@sap/cds": "^9",
+    "@sap/cds-mtxs": "^3",
     "@sap/xssec": "^4"
   },
   "devDependencies": {
@@ -52,7 +53,14 @@
         "[production]": {
           "kind": "xsuaa"
         }
+      },
+      "[production]": {
+        "multitenancy": true
+      },
+      "[with-mtx]": {
+        "multitenancy": true
       }
-    }
+    },
+    "profile": "with-mtx-sidecar"
   }
 }

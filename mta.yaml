@@ -11,25 +11,38 @@ build-parameters:
         - npm ci
         - npx cds build --production
 modules:
-##Start of ANubhav code for mycapapp-ui = approuter + fiori app (Static files)
+  ##Start of ANubhav code for mycapapp-ui = approuter + fiori app (Static files)
   - name: mycapapp-ui
     type: nodejs
     path: app
     parameters:
+      keep-existing-routes: true
       instances: 1
       buildpack: nodejs_buildpack
+    properties:
+      TENANT_HOST_PATTERN: "^(.*)-${default-uri}"
     build-parameters:
       builder: npm-ci
     requires:
       - name: mycapapp-auth
-      - name: srv-api 
+      - name: mtx-api
+        group: destinations
+        properties:
+          name: mtx-api # must be used in xs-app.json as well
+          url: ~{mtx-url}
+      - name: srv-api
         group: destinations
         properties:
           name: srv-api
           strictSSL: true
           forwardAuthToken: true
           url: '~{srv-url}'
-##End of ANubhav code for mycapapp-ui = approuter + fiori app (Static files)
+    provides:
+      - name: app-api
+        properties:
+          app-protocol: ${protocol}
+          app-uri: ${default-uri}
+  ##End of ANubhav code for mycapapp-ui = approuter + fiori app (Static files)
 
   - name: mycapapp-srv
     type: nodejs
@@ -45,15 +58,40 @@ modules:
           srv-url: ${default-url}
     requires:
       - name: mycapapp-auth
-      - name: mycapapp-db
+      - name: mycapapp-db-mtx
 
-  - name: mycapapp-db-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
+  - name: mycapapp-mtx
+    type: nodejs
+    path: gen/mtx/sidecar
     requires:
-      - name: mycapapp-db
+      - name: mycapapp-auth
+      - name: mycapapp-db-mtx
+      - name: mycapapp-registry
+      - name: app-api
+        properties:
+          SUBSCRIPTION_URL: ~{app-protocol}://\${tenant_subdomain}-~{app-uri}
+    build-parameters:
+      builder: npm-ci
+    parameters:
+      instances: 1
+      memory: 256M
+      disk-quota: 512M
+    hooks:
+      - name: upgrade-all
+        type: task
+        phases:
+          - blue-green.application.before-start.idle
+          - deploy.application.before-start
+        parameters:
+          name: upgrade
+          memory: 512M # increase as required
+          disk-quota: 768M # increase as required
+          command: cds-mtx upgrade '*'
+    provides:
+      - name: mtx-api
+        properties:
+          mtx-url: ${default-url}
+
 
 resources:
   - name: mycapapp-auth
@@ -64,13 +102,50 @@ resources:
       path: ./xs-security.json
       config:
         xsappname: mycapapp-${org}-${space}
-        tenant-mode: dedicated
+        tenant-mode: shared
         oauth2-configuration:
           credential-types:
             - "binding-secret"
             - "x509"
-  - name: mycapapp-db
-    type: com.sap.xs.hdi-container
+          redirect-uris:
+            - https://*~{app-api/app-uri}/**
+        role-collections:
+          - name: 'Display (mycapapp ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Display'
+          - name: 'Edit (mycapapp ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Edit'
+          - name: 'userattributes (mycapapp ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.userattributes'
+    requires:
+      - name: app-api
+  - name: mycapapp-db-mtx
+    type: org.cloudfoundry.managed-service
     parameters:
-      service: hana
-      service-plan: hdi-shared
+      service: service-manager
+      service-plan: container
+  - name: mycapapp-registry
+    type: org.cloudfoundry.managed-service
+    requires:
+      - name: mtx-api
+    parameters:
+      service: saas-registry
+      service-plan: application
+      config:
+        xsappname: mycapapp-${org}-${space}
+        appName: mycapapp-${org}-${space}
+        displayName: mycapapp
+        description: A simple CAP project.
+        category: 'Category'
+        appUrls:
+          getDependencies: ~{mtx-api/mtx-url}/-/cds/saas-provisioning/dependencies
+          onSubscription: ~{mtx-api/mtx-url}/-/cds/saas-provisioning/tenant/{tenantId}
+          onSubscriptionAsync: true
+          onUnSubscriptionAsync: true
+          onUpdateDependenciesAsync: true
+          callbackTimeoutMillis: 300000 # Increase if your deployments are taking longer than that
