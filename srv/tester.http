@@ -10,8 +10,12 @@ http://localhost:4004/odata/v4/CatalogService/$metadata
 http://localhost:4004/odata/v4/CatalogService/EmployeeSet
 
 ### Get ALL employees in V2
-http://localhost:4004/odata/v2/CatalogService/EmployeeSet
+http://localhost:4004/odata/v2/CatalogService/EmployeeSet/$count
 Authorization: Basic varun:1234
+
+### Get ALL employees in V2
+http://localhost:4004/odata/v2/CatalogService/EmployeeSet/$count
+Authorization: Basic yamini:4321
 
 
 ### Count of employee - $count
@@ -64,7 +68,7 @@ Authorization: Basic yamini:4321
   "salaryAmount": 1000000,
   "accountNumber": "8877665544",
   "bankId": "121000358",
-  "bankName": "RBS",
+  "bankName": "My Bank of London",
   "country": null
 }
 

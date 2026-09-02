@@ -31,6 +31,7 @@
           "kind": "mocked",
           "users": {
             "varun": {
+              "tenant": "t1",
               "password": "1234",
               "roles": [
                 "Display",
@@ -43,10 +44,17 @@
               }
             },
             "yamini": {
+              "tenant": "t2",
               "password": "4321",
               "roles": [
+                "Display",
                 "Edit"
-              ]
+              ],
+              "attr": {
+                "Spiderman": [
+                  "My Bank of London"
+                ]
+              }
             }
           }
         },
